@@ -5,12 +5,14 @@ import databaseConfig from './database/config/database.config';
 import appConfig from './config/app.config';
 import { TypeOrmConfigService } from './database/typeorm-config.service';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { RedisModule } from './redis/redis.module';
+import redisConfig from './redis/config/redis.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [databaseConfig, appConfig],
+      load: [databaseConfig, appConfig, redisConfig],
       envFilePath: ['.env'],
     }),
     TypeOrmModule.forRootAsync({
@@ -20,6 +22,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
         return new DataSource(options).initialize();
       },
     }),
+    RedisModule,
   ],
   controllers: [],
   providers: [],

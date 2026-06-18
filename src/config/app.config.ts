@@ -10,7 +10,6 @@ import {
   Max,
   Min,
 } from 'class-validator';
-import { assertTestingEnvironment } from './env-file';
 
 enum Environment {
   Development = 'development',
@@ -51,8 +50,8 @@ class EnvironmentVariablesValidator {
 }
 
 export default registerAs<AppConfig>('app', () => {
+  console.info(`Register AppConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
-  assertTestingEnvironment();
 
   return {
     nodeEnv: process.env.NODE_ENV || 'development',

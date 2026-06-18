@@ -1,9 +1,5 @@
 import 'reflect-metadata';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { assertTestingEnvironment, loadEnvFile } from '../config/env-file';
-
-loadEnvFile();
-assertTestingEnvironment();
 
 export const AppDataSource = new DataSource({
   type: process.env.DATABASE_TYPE,

@@ -11,36 +11,45 @@ import {
 } from 'class-validator';
 import validateConfig from '../../utils/validate-config';
 import { DatabaseConfig } from './database-config.type';
-import { assertTestingEnvironment } from '../../config/env-file';
+
+type DatabaseEnvironment = {
+  DATABASE_URL?: string;
+};
+
+const hasDatabaseUrl = (envValues: DatabaseEnvironment): boolean =>
+  Boolean(envValues.DATABASE_URL);
+
+const doesNotHaveDatabaseUrl = (envValues: DatabaseEnvironment): boolean =>
+  !hasDatabaseUrl(envValues);
 
 class EnvironmentVariablesValidator {
-  @ValidateIf((envValues) => envValues.DATABASE_URL)
+  @ValidateIf(hasDatabaseUrl)
   @IsString()
   DATABASE_URL!: string;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsString()
   DATABASE_TYPE!: string;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsString()
   DATABASE_HOST!: string;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsInt()
   @Min(0)
   @Max(65535)
   DATABASE_PORT!: number;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsString()
   DATABASE_PASSWORD!: string;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsString()
   DATABASE_NAME!: string;
 
-  @ValidateIf((envValues) => !envValues.DATABASE_URL)
+  @ValidateIf(doesNotHaveDatabaseUrl)
   @IsString()
   DATABASE_USERNAME!: string;
 
@@ -74,12 +83,12 @@ class EnvironmentVariablesValidator {
 }
 
 export default registerAs<DatabaseConfig>('database', () => {
+  console.info(`Register DatabaseConfig from environment variables`);
   validateConfig(process.env, EnvironmentVariablesValidator);
-  assertTestingEnvironment();
 
   return {
     url: process.env.DATABASE_URL,
-    type: process.env.DATABASE_TYPE,
+    type: process.env.DATABASE_TYPE ?? 'postgres',
     host: process.env.DATABASE_HOST,
     port: process.env.DATABASE_PORT
       ? parseInt(process.env.DATABASE_PORT, 10)
